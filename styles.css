@@ -38,12 +38,15 @@ body {
     height: 90%;
     position: relative;
 }
+#chatResponse{
+    width: 95%;
+    height: 90%;
+    overflow: auto;
+}
 
 .chatlog {
     font: 15px arial, sans-serif;
-    /* display: block;
-    position: absolute; */
-
+    bottom: 0;
 }
 
 #chatbox {

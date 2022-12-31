@@ -66,11 +66,14 @@ function newEntry() {
     // says the message using the text to speech function written below
     //Speech(botMessage);
     //outputs the last few array elements of messages to html
-    for (var i = 1; i < 15; i++) {
-      if (messages[messages.length - i])
-        document.getElementById("chatlog" + i).innerHTML =
-          messages[messages.length - i];
+    var html = "";
+    for (var i = 0; i < messages.length; i++) {
+      html +=
+        '<p class="chatlog">' +
+        messages[i] +
+        "</p>";
     }
+    document.getElementById("chatResponse").innerHTML = html;
   }
 }
 
