@@ -19,7 +19,7 @@ body {
     box-shadow: 5px 5px 5px grey;
     border-radius: 15px;
     height: 85vh;
-
+    position: relative;
 }
 
 #chatborder {
@@ -38,7 +38,8 @@ body {
     height: 90%;
     position: relative;
 }
-#chatResponse{
+
+#chatResponse {
     width: 95%;
     height: 90%;
     overflow: auto;
@@ -50,11 +51,12 @@ body {
 }
 
 #chatbox {
+    position: absolute;
     font: 17px arial, sans-serif;
     height: 30px;
     width: 95%;
-    position: absolute;
     bottom: 10px;
+    margin: 0 auto;
     border-style: solid;
     border-radius: 8px;
     border-width: 2px;

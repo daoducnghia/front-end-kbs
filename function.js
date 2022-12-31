@@ -68,28 +68,11 @@ function newEntry() {
     //outputs the last few array elements of messages to html
     var html = "";
     for (var i = 0; i < messages.length; i++) {
-      html +=
-        '<p class="chatlog">' +
-        messages[i] +
-        "</p>";
+      html += '<p class="chatlog">' + messages[i] + "</p>";
     }
     document.getElementById("chatResponse").innerHTML = html;
-  }
-}
-
-//text to Speech
-//https://developers.google.com/web/updates/2014/01/Web-apps-that-talk-Introduction-to-the-Speech-Synthesis-API
-function Speech(say) {
-  if ("speechSynthesis" in window && talking) {
-    var utterance = new SpeechSynthesisUtterance(say);
-    //msg.voice = voices[10]; // Note: some voices don't support altering params
-    //msg.voiceURI = 'native';
-    //utterance.volume = 1; // 0 to 1
-    //utterance.rate = 0.1; // 0.1 to 10
-    //utterance.pitch = 1; //0 to 2
-    //utterance.text = 'Hello World';
-    //utterance.lang = 'en-US';
-    // speechSynthesis.speak(utterance);
+    var chatHistory = document.getElementById("chatResponse");
+    chatHistory.scrollTop = chatHistory.scrollHeight;
   }
 }
 

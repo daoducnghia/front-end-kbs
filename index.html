@@ -1,22 +1,28 @@
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="jquery-3.6.1.min.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-
-<body>
-  <div id="bodybox">
-    <div id="chatborder">
-      <div id="chatResponse">
-        <p class="chatlog">&nbsp;</p>
+  <body>
+    <div id="bodybox">
+      <div id="chatborder">
+        <div id="chatResponse">
+          <p class="chatlog"></p>
+        </div>
+        <input
+          type="text"
+          name="chat"
+          id="chatbox"
+          placeholder="Hi there! Type here to talk to me."
+          onfocus="placeHolder()"
+        />
       </div>
-      <input type="text" name="chat" id="chatbox" placeholder="Hi there! Type here to talk to me."
-        onfocus="placeHolder()" />
-      <script src="function.js"></script>
-</body>
-
+    </div>
+    <script src="function.js"></script>
+  </body>
 </html>
