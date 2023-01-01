@@ -41,8 +41,11 @@ body {
 
 #chatResponse {
     width: 95%;
-    height: 90%;
+    max-height: 90%;
+    height: max-content;
     overflow: auto;
+    bottom: 40px;
+    position: absolute;
 }
 
 .chatlog {
@@ -70,13 +73,4 @@ h1 {
 pre {
     background-color: #f0f0f0;
     margin-left: 20px;
-}
-
-#chatResponse {
-    width: 95%;
-    max-height: 90%;
-    height: max-content;
-    overflow: auto;
-    bottom: 40px;
-    position: absolute;
 }
