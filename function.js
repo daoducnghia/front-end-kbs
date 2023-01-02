@@ -155,7 +155,7 @@ function KB1() {
     }
   };
 }
-
+var listNguyenNhan = [];
 function KB2() {
   chatbotResponse(
     "Bạn đã chọn chức năng: Xác định nguyên nhân và cách điều trị"
@@ -186,7 +186,6 @@ function KB2() {
               if (lastUserMessage == i) {
                 check = false;
                 //console.log(result[i - 1].id);
-                var listNguyenNhan = [];
                 var myHeaders = new Headers();
                 myHeaders.append("Content-Type", "application/json");
 
@@ -204,37 +203,7 @@ function KB2() {
                   .then((response1) => response1.json())
                   .then((result1) => {
                     // get cau hoi
-                    var cnt1 = 0;
-                    console.log(result1[1].cauhoi);
-                    for (var x = 0; x < result1.length; x++) {
-                      // window.setTimeout(function (a) {
-                      chatbotResponse(result1[x].cauhoi);
-                      // }, a * 1000);
-
-                      document.getElementById("chatbox").onkeydown = function (
-                        e
-                      ) {
-                        if (e.keyCode == 13) {
-                          if (document.getElementById("chatbox").value != "") {
-                            getMessage();
-                            var dongY = [
-                              "có",
-                              "co",
-                              "c",
-                              "yes",
-                              "y",
-                              "đồng ý",
-                              "ok",
-                              "yup",
-                            ];
-                            if (dongY.includes(lastUserMessage.toLowerCase())) {
-                              listNguyenNhan.push(result1[x].nguyennhan.name);
-                            }
-                          }
-                        }
-                      };
-                    }
-                    console.log(listNguyenNhan);
+                    findCause(0, result1);
                   })
                   .catch((error1) => console.log("error", error1));
               }
@@ -255,7 +224,6 @@ function KB3() {
     method: "GET",
     redirect: "follow",
   };
-
   fetch("http://localhost:8080/get-all-benh", requestOptions) // Chon benh tu danh sach
     .then((response) => response.json())
     .then((result) => {
@@ -390,6 +358,54 @@ function KB3() {
           }
         }
       };
+    })
+    .catch((error) => console.log("error", error));
+}
+function findCause(i, que) {
+  console.log(que.length);
+  if (i >= que.length) {
+    findTreatment();
+    return;
+  }
+  chatbotResponse(que[i].cauhoi);
+  document.getElementById("chatbox").onkeydown = function (e) {
+    e.stopImmediatePropagation();
+    if (e.keyCode == 13) {
+      if (document.getElementById("chatbox").value != "") {
+        getMessage();
+        var dongY = ["có", "co", "c", "yes", "y", "đồng ý", "ok", "yup"];
+        if (dongY.includes(lastUserMessage.toLowerCase())) {
+          listNguyenNhan.push(que[i].nguyennhan.id);
+        }
+        findCause(i + 1, que);
+      }
+    }
+  };
+}
+function findTreatment() {
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  var raw = JSON.stringify(listNguyenNhan);
+
+  var requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow",
+  };
+
+  fetch("http://localhost:8080/cach-dieu-tri", requestOptions)
+    .then((response) => response.json())
+    .then((result) => {
+      let txt = "";
+      let cnt = 1;
+      for(let r of result){
+        txt += "<br>"+cnt+". "+r.name;
+        cnt++;
+      }
+      chatbotResponse("Cách điều trị:"+txt)
+      chatBotRequestFunction(KB2);
     })
     .catch((error) => console.log("error", error));
 }
