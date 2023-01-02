@@ -157,7 +157,97 @@ function KB1() {
 }
 
 function KB2() {
-  chatbotResponse("Chưa phát triển!");
+  chatbotResponse(
+    "Bạn đã chọn chức năng: Xác định nguyên nhân và cách điều trị"
+  );
+  var requestOptions = {
+    method: "GET",
+    redirect: "follow",
+  };
+
+  fetch("http://localhost:8080/get-benh", requestOptions)
+    .then((response) => response.json())
+    .then((result) => {
+      var cnt = 1; // thuc hien chon benh
+      var text = "Vui lòng chọn bệnh.";
+
+      for (var i of result) {
+        text += "<br>" + cnt + ". " + i.name;
+        cnt++;
+      }
+      chatbotResponse(text);
+
+      document.getElementById("chatbox").onkeydown = function (e) {
+        if (e.keyCode == 13) {
+          if (document.getElementById("chatbox").value != "") {
+            getMessage();
+            var check = true;
+            for (var i = 1; i < cnt; i++) {
+              if (lastUserMessage == i) {
+                check = false;
+                //console.log(result[i - 1].id);
+                var listNguyenNhan = [];
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                var raw = JSON.stringify({
+                  id: result[i - 1].id,
+                });
+
+                var requestOptions = {
+                  method: "POST",
+                  headers: myHeaders,
+                  body: raw,
+                  redirect: "follow",
+                };
+                fetch("http://localhost:8080/get-cauhoi-po", requestOptions)
+                  .then((response1) => response1.json())
+                  .then((result1) => {
+                    // get cau hoi
+                    var cnt1 = 0;
+                    console.log(result1[1].cauhoi);
+                    for (var x = 0; x < result1.length; x++) {
+                      // window.setTimeout(function (a) {
+                      chatbotResponse(result1[x].cauhoi);
+                      // }, a * 1000);
+
+                      document.getElementById("chatbox").onkeydown = function (
+                        e
+                      ) {
+                        if (e.keyCode == 13) {
+                          if (document.getElementById("chatbox").value != "") {
+                            getMessage();
+                            var dongY = [
+                              "có",
+                              "co",
+                              "c",
+                              "yes",
+                              "y",
+                              "đồng ý",
+                              "ok",
+                              "yup",
+                            ];
+                            if (dongY.includes(lastUserMessage.toLowerCase())) {
+                              listNguyenNhan.push(result1[x].nguyennhan.name);
+                            }
+                          }
+                        }
+                      };
+                    }
+                    console.log(listNguyenNhan);
+                  })
+                  .catch((error1) => console.log("error", error1));
+              }
+            }
+
+            if (check) {
+              chatbotResponse("");
+            }
+          }
+        }
+      };
+    })
+    .catch((error) => console.log("error", error));
 }
 function KB3() {
   chatbotResponse("Bạn đã chọn chức năng: Tìm kiếm thông tin thuốc.");
