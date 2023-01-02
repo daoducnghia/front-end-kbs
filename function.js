@@ -203,38 +203,187 @@ function KB2() {
                 fetch("http://localhost:8080/get-cauhoi-po", requestOptions)
                   .then((response1) => response1.json())
                   .then((result1) => {
-                    // get cau hoi
-                    var cnt1 = 0;
-                    console.log(result1[1].cauhoi);
-                    for (var x = 0; x < result1.length; x++) {
-                      // window.setTimeout(function (a) {
-                      chatbotResponse(result1[x].cauhoi);
-                      // }, a * 1000);
+                    var cnt1 = 1; // thuc hien chon benh
+                    var textNN =
+                      "Vui lòng trả lời câu hỏi, nếu CÓ bạn hãy điền số của câu hỏi cách nhau bằng dấu phẩy.";
 
-                      document.getElementById("chatbox").onkeydown = function (
-                        e
-                      ) {
-                        if (e.keyCode == 13) {
-                          if (document.getElementById("chatbox").value != "") {
-                            getMessage();
-                            var dongY = [
-                              "có",
-                              "co",
-                              "c",
-                              "yes",
-                              "y",
-                              "đồng ý",
-                              "ok",
-                              "yup",
-                            ];
-                            if (dongY.includes(lastUserMessage.toLowerCase())) {
-                              listNguyenNhan.push(result1[x].nguyennhan.name);
+                    for (var x of result1) {
+                      textNN += "<br>" + cnt1 + ". " + x.cauhoi;
+                      cnt1++;
+                    }
+                    chatbotResponse(textNN);
+
+                    var listNN = [];
+                    document.getElementById("chatbox").onkeydown = function (
+                      e
+                    ) {
+                      if (e.keyCode == 13) {
+                        if (document.getElementById("chatbox").value != "") {
+                          getMessage();
+
+                          let txtNN = lastUserMessage.split(",");
+                          for (let i of txtNN) {
+                            i = i.trim();
+                            if (i != "" && !listNguyenNhan.includes(i)) {
+                              listNguyenNhan.push(
+                                result1[parseInt(i) - 1].nguyennhan.name
+                              );
                             }
                           }
                         }
-                      };
-                    }
+                      }
+                    };
                     console.log(listNguyenNhan);
+
+                    var listID = [];
+                    for (var i of result1) {
+                      for (var x of listNN) {
+                        if (i.nguyennhan == x) {
+                          listID.push(i.nguyennhan.id);
+                        }
+                      }
+                    }
+                    console.log(listID);
+
+                    //--------------------------get cach dieu tri-----------------
+                    for (var i of listID) {
+                      for (var x of listNN) {
+                        var myHeaders = new Headers();
+                        myHeaders.append("Content-Type", "application/json");
+
+                        var raw = JSON.stringify({
+                          nguyenNhan: {
+                            id: i,
+                            name: x,
+                          },
+                        });
+
+                        var requestOptions = {
+                          method: "POST",
+                          headers: myHeaders,
+                          body: raw,
+                          redirect: "follow",
+                        };
+
+                        fetch(
+                          "http://localhost:8080/get-cach-dieu-tri",
+                          requestOptions
+                        )
+                          .then((response2) => response2.json())
+                          .then((result2) => {
+                            chatbotResponse(
+                              "<br>" +
+                                result2.nguyennhan.name +
+                                "<br>" +
+                                result2.cachDieuTri.name
+                            );
+                          })
+                          .catch((error2) => console.log("error", error2));
+                      }
+                    }
+
+                    // for (var i of listNguyenNhan) {
+                    //   listNN.push(result1[i - 1].nguyennhan.name);
+                    // }
+                    // console.log(listNN);
+                    // get cau hoi
+
+                    // (function myLoop(x) {
+                    //   setTimeout(function () {
+                    //     console.log(result1[x].cauhoi); //  your code here
+                    //     chatbotResponse(result1[x].cauhoi);
+
+                    //     document.getElementById("chatbox").onkeydown =
+                    //       function (e) {
+                    //         if (e.keyCode == 13) {
+                    //           if (
+                    //             document.getElementById("chatbox").value != ""
+                    //           ) {
+                    //             getMessage();
+                    //             var dongY = [
+                    //               "có",
+                    //               "co",
+                    //               "c",
+                    //               "yes",
+                    //               "y",
+                    //               "đồng ý",
+                    //               "ok",
+                    //               "yup",
+                    //             ];
+                    //             if (
+                    //               dongY.includes(lastUserMessage.toLowerCase())
+                    //             ) {
+                    //               listNguyenNhan.push(
+                    //                 result1[x].nguyennhan.name
+                    //               );
+                    //             }
+                    //           }
+                    //         }
+                    //       };
+
+                    //     if (--x) myLoop(x); //  decrement i and call myLoop again if i > 0
+                    //   }, 30000);
+                    // })(result1.length - 1);
+
+                    // console.log(result1[1].cauhoi);
+                    // for (var x = 0; x < result1.length; x++) {
+                    //   // window.setTimeout(function (a) {
+                    //   chatbotResponse(result1[x].cauhoi);
+                    //   // }, a * 1000);
+
+                    //   document.getElementById("chatbox").onkeydown = function (
+                    //     e
+                    //   ) {
+                    //     if (e.keyCode == 13) {
+                    //       if (document.getElementById("chatbox").value != "") {
+                    //         getMessage();
+                    //         var dongY = [
+                    //           "có",
+                    //           "co",
+                    //           "c",
+                    //           "yes",
+                    //           "y",
+                    //           "đồng ý",
+                    //           "ok",
+                    //           "yup",
+                    //         ];
+                    //         if (dongY.includes(lastUserMessage.toLowerCase())) {
+                    //           listNguyenNhan.push(result1[x].nguyennhan.name);
+                    //         }
+                    //       }
+                    //     }
+                    //   };
+                    // }
+
+                    // var x = 0;
+                    // while (x < result1.length) {
+                    //   chatbotResponse(result1[x].cauhoi);
+
+                    //   document.getElementById("chatbox").onkeydown = function (
+                    //     e
+                    //   ) {
+                    //     if (e.keyCode == 13) {
+                    //       if (document.getElementById("chatbox").value != "") {
+                    //         getMessage();
+                    //         var dongY = [
+                    //           "có",
+                    //           "co",
+                    //           "c",
+                    //           "yes",
+                    //           "y",
+                    //           "đồng ý",
+                    //           "ok",
+                    //           "yup",
+                    //         ];
+                    //         if (dongY.includes(lastUserMessage.toLowerCase())) {
+                    //           listNguyenNhan.push(result1[x].nguyennhan.name);
+                    //         }
+                    //         x++;
+                    //       }
+                    //     }
+                    //   };
+                    // }
+                    // console.log(listNguyenNhan);
                   })
                   .catch((error1) => console.log("error", error1));
               }
