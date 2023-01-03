@@ -3,6 +3,7 @@ var messages = [],
   botMessage = "",
   botName = "Chuyên gia",
   seconUserMessage = "";
+var tenbenh = "";
 
 function chatbotStart() {
   chatbotResponse(
@@ -144,7 +145,12 @@ function KB1() {
               )
                 .then((response1) => response1.json())
                 .then((result1) => {
-                  chatbotResponse('Thông tin bệnh '+result1.name+': '+result1.description);
+                  chatbotResponse(
+                    "Thông tin bệnh " +
+                      result1.name +
+                      ": " +
+                      result1.description
+                  );
                   chatBotRequestFunction(KB1);
                 })
                 .catch((error) => console.log("error", error));
@@ -180,6 +186,7 @@ function KB2() {
         text += "<br>" + cnt + ". " + i.name;
         cnt++;
       }
+      text += "<br><i>(Vui lòng nhập các lựa chọn bằng số)</i>";
       chatbotResponse(text);
 
       document.getElementById("chatbox").onkeydown = function (e) {
@@ -190,6 +197,7 @@ function KB2() {
             for (var i = 1; i < cnt; i++) {
               if (lastUserMessage == i) {
                 check = false;
+                tenbenh = result[i - 1].name;
                 //console.log(result[i - 1].id);
                 var myHeaders = new Headers();
                 myHeaders.append("Content-Type", "application/json");
@@ -216,6 +224,7 @@ function KB2() {
 
             if (check) {
               chatbotResponse("");
+              chatbotResponse("Vui lòng chọn lại!");
             }
           }
         }
@@ -238,6 +247,7 @@ function KB3() {
         text += "<br>" + cnt + ". " + i.name;
         cnt++;
       }
+      text += "<br><i>(Vui lòng nhập các lựa chọn bằng số)</i>";
       chatbotResponse(text); //Het chon benh
 
       document.getElementById("chatbox").onkeydown = function (e) {
@@ -271,6 +281,7 @@ function KB3() {
                       text1 += "<br>" + cnt1 + ". " + i.thuoc;
                       cnt1++;
                     }
+                    text1 += "<br><i>(Vui lòng nhập các lựa chọn bằng số)</i>";
                     chatbotResponse(text1); // Het chon thuoc
 
                     document.getElementById("chatbox").onkeydown = function (
@@ -349,6 +360,7 @@ function KB3() {
                           }
                           if (check1) {
                             chatbotResponse("");
+                            chatbotResponse("Vui lòng chọn lại!");
                           }
                         }
                       }
@@ -366,10 +378,44 @@ function KB3() {
     })
     .catch((error) => console.log("error", error));
 }
+
 function findCause(i, que) {
   console.log(que.length);
   if (i >= que.length) {
-    findNN();
+    if (listNguyenNhan.length == 0) {
+      chatbotResponse("Không thể xác định cách điều trị chính xác.");
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
+        name: tenbenh,
+      });
+
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      fetch("http://localhost:8080/get-all-cach-dieu-tri", requestOptions)
+        .then((response) => response.json())
+        .then((result) => {
+          var cnt = 1;
+          var txt = "Bạn có thể tham khảo các cách điều trị dưới đây.";
+          for (var i of result) {
+            txt += "<br>" + cnt + ". " + i.name;
+            cnt++;
+          }
+
+          chatbotResponse(txt);
+          chatBotRequestFunction(KB2);
+        })
+        .catch((error) => console.log("error", error));
+    } else {
+      findNN();
+    }
+
     //findTreatment();
     return;
   }
@@ -383,14 +429,14 @@ function findCause(i, que) {
           dongY.includes(lastUserMessage.toLowerCase()) &&
           que[i].answer == "yes"
         ) {
-          ///////////////////////////////////
           listNguyenNhan.push(que[i].nguyennhan.id);
         } else if (
-          !dongY.includes(lastUserMessage.toLowerCase()) &&
+          dongY.includes(lastUserMessage.toLowerCase()) == false &&
           que[i].answer == "no"
         ) {
           listNguyenNhan.push(que[i].nguyennhan.id);
         }
+
         findCause(i + 1, que);
       }
     }
