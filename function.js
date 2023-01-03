@@ -7,7 +7,7 @@ var messages = [],
 function chatbotStart() {
   chatbotResponse(
     "Xin chào bạn! Bạn muốn làm gì?" +
-      "<br>1. Chẩn đoán bệnh tiêu hoá." +
+      "<br>1. Chẩn đoán một số bệnh tiêu hoá." +
       "<br>2. Xác định cách điều trị theo nguyên nhân." +
       "<br>3. Tìm kiếm thông tin thuốc." +
       "<br><i>(Vui lòng nhập các lựa chọn bằng số)</i>"
@@ -43,23 +43,27 @@ function chatbotResponse(text = "") {
   if (text != "") {
     botMessage = text;
   }
-  messages.push("<b>" + botName + ":</b> " + botMessage);
+  messages.push(
+    '<nav class="logChatBot"><b>' + botName + ":</b> " + botMessage + "</nav>"
+  );
   showMessage();
 }
 
 function getMessage() {
   lastUserMessage = document.getElementById("chatbox").value;
   document.getElementById("chatbox").value = "";
-  messages.push(lastUserMessage);
+  messages.push('<nav class="logUser">' + lastUserMessage + "</nav>");
 }
 
 function showMessage() {
-  var html = "";
+  var html = '<div class="nav">';
   for (var i = 0; i < messages.length; i++) {
-    html += '<p class="chatlog">' + messages[i] + "</p>";
+    html += '<div class="chatlog">' + messages[i] + "</div>";
   }
+  html += "</div>";
   document.getElementById("chatResponse").innerHTML = html;
-  var chatHistory = document.getElementById("chatResponse");
+
+  var chatHistory = document.getElementsByClassName("nav").item(0);
   chatHistory.scrollTop = chatHistory.scrollHeight;
 }
 var check;
@@ -84,9 +88,10 @@ function newEntry() {
 }
 
 function KB1() {
+  chatbotResponse("Bạn đã chọn chức năng: Chẩn đoán một số bệnh tiêu hoá");
   chatbotResponse(
     "Vui lòng nhập các triệu chứng bạn đang gặp phải!" +
-      '<br><i>(Các triệu chứng ngăn cách nhau bằng dấu phẩy ",")'
+      '<br><i>(Các triệu chứng ngăn cách nhau bằng dấu phẩy ",")</i>'
   );
   document.getElementById("chatbox").onkeydown = function (e) {
     if (e.keyCode == 13) {
@@ -119,36 +124,36 @@ function KB1() {
               chatbotResponse(
                 "Có thể bạn đang bị bệnh <b>" + result.message + "</b>"
               );
+              var myHeaders1 = new Headers();
+              myHeaders1.append("Content-Type", "application/json");
+
+              var raw1 = JSON.stringify({
+                name: result.message,
+              });
+
+              var requestOptions1 = {
+                method: "POST",
+                headers: myHeaders1,
+                body: raw1,
+                redirect: "follow",
+              };
+
+              fetch(
+                "http://localhost:8080/api/get-benh-by-name",
+                requestOptions1
+              )
+                .then((response1) => response1.json())
+                .then((result1) => {
+                  chatbotResponse('Thông tin bệnh '+result1.name+': '+result1.description);
+                  chatBotRequestFunction(KB1);
+                })
+                .catch((error) => console.log("error", error));
             } else {
               chatbotResponse(
                 "Không thể chẩn đoán bệnh của bạn, bạn cần đến trung tâm y tế để kiểm tra cũng như làm các xét nghiệm liên quan."
               );
+              chatBotRequestFunction(KB1);
             }
-            chatbotResponse(
-              "Bạn có muốn tiếp tục chẩn đoán bệnh không?(Có/Không)"
-            );
-            document.getElementById("chatbox").onkeydown = function (e) {
-              if (e.keyCode == 13) {
-                if (document.getElementById("chatbox").value != "") {
-                  getMessage();
-                  var dongY = [
-                    "có",
-                    "co",
-                    "c",
-                    "yes",
-                    "y",
-                    "đồng ý",
-                    "ok",
-                    "yup",
-                  ];
-                  if (dongY.includes(lastUserMessage.toLowerCase())) {
-                    newEntry();
-                  } else {
-                    chatbotEnd();
-                  }
-                }
-              }
-            };
           })
           .catch((error) => console.log("error", error));
       }
@@ -370,7 +375,6 @@ function findCause(i, que) {
   }
   chatbotResponse(que[i].cauhoi);
   document.getElementById("chatbox").onkeydown = function (e) {
-    e.stopImmediatePropagation();
     if (e.keyCode == 13) {
       if (document.getElementById("chatbox").value != "") {
         getMessage();

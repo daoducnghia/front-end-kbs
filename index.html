@@ -1,28 +1,30 @@
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="jquery-3.6.1.min.js"></script>
-  </head>
 
-  <body>
-    <div id="bodybox">
-      <div id="chatborder">
-        <div id="chatResponse">
-          <p class="chatlog"></p>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hệ thống chuyên gia về bệnh tiêu hoá</title>
+  <link rel="shortcut icon" type="image/png" href="./img/1698535.png"/>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="jquery-3.6.1.min.js"></script>
+</head>
+
+<body>
+  <div id="bodybox">
+    <div class="image"><img src="./img/1698535.png" alt=""></div>
+    <div id="chatborder">
+      <div class="title">Hệ thống chuyên gia về bệnh tiêu hoá</div>
+      <div id="chatResponse">
+        <div class="nav">
+          <div class="chatlog"></div>
         </div>
-        <input
-          type="text"
-          name="chat"
-          id="chatbox"
-          placeholder="Hi there! Type here to talk to me."
-          onfocus="placeHolder()"
-        />
       </div>
+      <input type="text" name="chat" id="chatbox" placeholder="Nhập nội dung cần hỗ trợ..."
+        onfocus="placeHolder()" />
     </div>
-    <script src="function.js"></script>
-  </body>
+  </div>
+  <script src="function.js"></script>
+</body>
+
 </html>
