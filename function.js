@@ -82,6 +82,7 @@ function newEntry() {
           KB3();
         } else {
           chatbotResponse();
+          chatbotResponse("Vui lòng chọn lại!");
         }
       }
     }
@@ -168,6 +169,8 @@ function KB1() {
 }
 var listNguyenNhan = [];
 function KB2() {
+  listNguyenNhan = [];
+  tenbenh = "";
   chatbotResponse(
     "Bạn đã chọn chức năng: Xác định nguyên nhân và cách điều trị"
   );
@@ -198,7 +201,6 @@ function KB2() {
               if (lastUserMessage == i) {
                 check = false;
                 tenbenh = result[i - 1].name;
-                //console.log(result[i - 1].id);
                 var myHeaders = new Headers();
                 myHeaders.append("Content-Type", "application/json");
 
@@ -295,7 +297,6 @@ function KB3() {
                           for (var i = 1; i < cnt1; i++) {
                             if (lastUserMessage == i) {
                               var idThuoc = result1[i - 1].id;
-                              console.log(idThuoc);
                               check1 = false;
                               chatbotResponse("Vui lòng nhập tuổi.");
                               document.getElementById("chatbox").onkeydown = // chon tuoi
@@ -315,7 +316,6 @@ function KB3() {
                                           "Content-Type",
                                           "application/json"
                                         );
-                                        console.log(result1[i - 1]);
                                         var tuoi1 = lastUserMessage;
 
                                         var raw = JSON.stringify({
@@ -349,9 +349,9 @@ function KB3() {
                                           );
                                       } else {
                                         chatbotResponse(
-                                          "Tuổi phải nằm trong khoảng 1 đến 100 tuổi."
+                                          "Tuổi phải là các số tự nhiên trong khoảng 0 đến 100 tuổi."
                                         );
-                                        KB3();
+                                        chatbotResponse("Vui lòng nhập lại!");
                                       }
                                     }
                                   }
@@ -371,6 +371,7 @@ function KB3() {
             }
             if (check) {
               chatbotResponse("");
+              chatbotResponse("Vui lòng chọn lại!");
             }
           }
         }
@@ -380,7 +381,6 @@ function KB3() {
 }
 
 function findCause(i, que) {
-  console.log(que.length);
   if (i >= que.length) {
     if (listNguyenNhan.length == 0) {
       chatbotResponse("Không thể xác định cách điều trị chính xác.");
@@ -425,16 +425,12 @@ function findCause(i, que) {
       if (document.getElementById("chatbox").value != "") {
         getMessage();
         var dongY = ["có", "co", "c", "yes", "y", "đồng ý", "ok", "yup"];
-        if (
-          dongY.includes(lastUserMessage.toLowerCase()) &&
-          que[i].answer == "yes"
-        ) {
-          listNguyenNhan.push(que[i].nguyennhan.id);
-        } else if (
-          dongY.includes(lastUserMessage.toLowerCase()) == false &&
-          que[i].answer == "no"
-        ) {
-          listNguyenNhan.push(que[i].nguyennhan.id);
+        if (dongY.includes(lastUserMessage.toLowerCase())) {
+          if (que[i].answer == "yes") listNguyenNhan.push(que[i].nguyennhan.id);
+        } else {
+          if (que[i].answer == "no") {
+            listNguyenNhan.push(que[i].nguyennhan.id);
+          }
         }
 
         findCause(i + 1, que);
@@ -497,8 +493,8 @@ function findNN() {
     })
     .catch((error) => console.log("error", error));
 }
-function placeHolder() {
-  document.getElementById("chatbox").placeholder = "";
-}
+// function placeHolder() {
+//   document.getElementById("chatbox").placeholder = "";
+// }
 
 newEntry();
